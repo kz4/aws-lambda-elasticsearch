@@ -58,7 +58,7 @@ def createIndex(esClient):
         res = esClient.indices.exists('metadata-store')
         if res is False:
             esClient.indices.create('metadata-store', body=indexDoc)
-        return 1
+            return 1
     except Exception as E:
             print("Unable to Create Index {0}".format("metadata-store"))
             print(E)
@@ -95,7 +95,7 @@ def lambda_handler(event, context):
     key = urllib.unquote_plus(event['Records'][0]['s3']['object']['key'].encode('utf8'))
     try:
         response = s3.get_object(Bucket=bucket, Key=key)
-    indexDocElement(esClient,key,response)
+        indexDocElement(esClient,key,response)
         return response['ContentType']
     except Exception as e:
         print(e)
