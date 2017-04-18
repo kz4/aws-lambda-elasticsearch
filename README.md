@@ -82,6 +82,87 @@ curl https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/m
   }
 }
 ```
+
+## GET Request with wildcard
+```
+curl https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/metadata-store/images/_search\?pretty\&q\=objectKey:"*panda*"
+```
+## Response
+```
+{
+  "took" : 9,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 4,
+    "max_score" : 1.0,
+    "hits" : [
+      {
+        "_index" : "metadata-store",
+        "_type" : "images",
+        "_id" : "AVt_TfOLJg-QeBjhxETr",
+        "_score" : 1.0,
+        "_source" : {
+          "content_length" : 62239,
+          "objectKey" : "test/panda9_with_cus_metadata.jpg",
+          "queryableKey" : "test_panda9_with_cus_metadata.jpg",
+          "content_type" : "image/jpeg",
+          "createdDate" : "2017-04-18T04:24:26+00:00",
+          "metadata" : "{\"gender\": \"pandas just like humans have two genders, which includes male and female\", \"age\": \"pandas usually can live around 20 years\", \"location\": \"pandas live in the forest with many other animals\"}"
+        }
+      },
+      {
+        "_index" : "metadata-store",
+        "_type" : "images",
+        "_id" : "AVt_SqOWJg-QeBjhxETn",
+        "_score" : 1.0,
+        "_source" : {
+          "content_length" : 122558,
+          "objectKey" : "test/panda4.jpg",
+          "queryableKey" : "test_panda4.jpg",
+          "content_type" : "image/jpeg",
+          "createdDate" : "2017-04-18T04:20:50+00:00",
+          "metadata" : "{}"
+        }
+      },
+      {
+        "_index" : "metadata-store",
+        "_type" : "images",
+        "_id" : "AVt_Sp9AJg-QeBjhxETm",
+        "_score" : 1.0,
+        "_source" : {
+          "content_length" : 94009,
+          "objectKey" : "test/panda3.jpg",
+          "queryableKey" : "test_panda3.jpg",
+          "content_type" : "image/jpeg",
+          "createdDate" : "2017-04-18T04:20:48+00:00",
+          "metadata" : "{}"
+        }
+      },
+      {
+        "_index" : "metadata-store",
+        "_type" : "images",
+        "_id" : "AVt_Sp2JJg-QeBjhxETl",
+        "_score" : 1.0,
+        "_source" : {
+          "content_length" : 36074,
+          "objectKey" : "test/panda2.jpg",
+          "queryableKey" : "test_panda2.jpg",
+          "content_type" : "image/jpeg",
+          "createdDate" : "2017-04-18T04:20:48+00:00",
+          "metadata" : "{}"
+        }
+      }
+    ]
+  }
+}
+```
+
+# Other searching requests
 ## GET Request "term" body
 ```
 curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/metadata-store/images/_search?pretty -H 'Content-Type: application/json' -d
@@ -222,3 +303,5 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
 }
 ```
 
+# Others
+The Archive folder includes the dependency packages which you can download using `pip`
