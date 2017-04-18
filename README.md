@@ -9,7 +9,44 @@ pip install urllib3 -t /path/to/project-dir
 3. Zip the helper packages with the lambda functions
 
 # Sample request and response
-## GET Request without body
+## GET Request for queryableKey
+```
+curl https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/metadata-store/images/_search\?pretty\&q\=queryableKey:"newFol_panda2.jpg"
+```
+## Response
+```
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 1,
+    "max_score" : 7.798693,
+    "hits" : [
+      {
+        "_index" : "metadata-store",
+        "_type" : "images",
+        "_id" : "AVt_L-BcJg-QeBjhxETM",
+        "_score" : 7.798693,
+        "_source" : {
+          "content_length" : 36074,
+          "objectKey" : "newFol/panda2.jpg",
+          "queryableKey" : "newFol_panda2.jpg",
+          "content_type" : "image/jpeg",
+          "createdDate" : "2017-04-18T03:51:35+00:00",
+          "metadata" : "{}"
+        }
+      }
+    ]
+  }
+}
+```
+
+## GET Request for field metadata
 ```
 curl https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/metadata-store/images/_search\?pretty\&q\=metadata:devil
 ```
@@ -35,6 +72,7 @@ curl https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/m
         "_source" : {
           "content_length" : 94209,
           "objectKey" : "test/panda6.jpg",
+          "queryableKey" : "test_panda6.jpg",
           "metadata" : "{\"owner\": \"devil\", \"city\": \"Boston\", \"street\": \"1 main st\"}",
           "content_type" : "image/jpeg",
           "createdDate" : "2017-04-16T21:13:44+00:00"
@@ -74,7 +112,8 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
         "_score" : 8.578434,
         "_source" : {
           "content_length" : 36074,
-          "objectKey" : "test/panda2.jpg",
+          "queryableKey" : "test/panda2.jpg",
+          "objectKey" : "test_panda2.jpg",
           "metadata" : "{}",
           "content_type" : "image/jpeg",
           "createdDate" : "2017-04-16T19:07:24+00:00"
@@ -116,6 +155,7 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
         "_source" : {
           "content_length" : 1461,
           "objectKey" : "AWSLogs/923732660828/CloudTrail/us-east-1/2017/04/16/923732660828_CloudTrail_us-east-1_20170416T0040Z_VFFbbgdIs2088i73.json.gz",
+          "queryableKey" : "AWSLogs_923732660828_CloudTrail_us-east-1_2017_04_16_923732660828_CloudTrail_us-east-1_20170416T0040Z_VFFbbgdIs2088i73.json.gz",
           "metadata" : "{}",
           "content_type" : "application/json",
           "createdDate" : "2017-04-16T00:42:43+00:00"
@@ -129,74 +169,10 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
         "_source" : {
           "content_length" : 538,
           "objectKey" : "AWSLogs/923732660828/CloudTrail/us-west-2/2017/04/16/923732660828_CloudTrail_us-west-2_20170416T0030Z_6bBxVrtfsVGBVRJs.json.gz",
+          "queryableKey" : "AWSLogs_923732660828_CloudTrail_us-west-2_2017_04_16_923732660828_CloudTrail_us-west-2_20170416T0030Z_6bBxVrtfsVGBVRJs.json.gz",
           "metadata" : "{}",
           "content_type" : "application/json",
           "createdDate" : "2017-04-16T00:36:41+00:00"
-        }
-      },
-      {
-        "_index" : "metadata-store",
-        "_type" : "images",
-        "_id" : "AVt0MU2lJg-QeBjhxD7j",
-        "_score" : 1.0,
-        "_source" : {
-          "content_length" : 4692,
-          "objectKey" : "AWSLogs/923732660828/CloudTrail/us-east-1/2017/04/16/923732660828_CloudTrail_us-east-1_20170416T0035Z_TCDSQEreexAaz1xy.json.gz",
-          "metadata" : "{}",
-          "content_type" : "application/json",
-          "createdDate" : "2017-04-16T00:37:20+00:00"
-        }
-      },
-      {
-        "_index" : "metadata-store",
-        "_type" : "images",
-        "_id" : "AVt0MZUAJg-QeBjhxD7k",
-        "_score" : 1.0,
-        "_source" : {
-          "content_length" : 1458,
-          "objectKey" : "AWSLogs/923732660828/CloudTrail/us-east-1/2017/04/16/923732660828_CloudTrail_us-east-1_20170416T0035Z_XCKMJMJAnllHu8ly.json.gz",
-          "metadata" : "{}",
-          "content_type" : "application/json",
-          "createdDate" : "2017-04-16T00:37:38+00:00"
-        }
-      },
-      {
-        "_index" : "metadata-store",
-        "_type" : "images",
-        "_id" : "AVt0NfCIJg-QeBjhxD7m",
-        "_score" : 1.0,
-        "_source" : {
-          "content_length" : 791,
-          "objectKey" : "AWSLogs/923732660828/CloudTrail/us-east-1/2017/04/16/923732660828_CloudTrail_us-east-1_20170416T0040Z_1UCYpvlnuj66rO0K.json.gz",
-          "metadata" : "{}",
-          "content_type" : "application/json",
-          "createdDate" : "2017-04-16T00:42:23+00:00"
-        }
-      },
-      {
-        "_index" : "metadata-store",
-        "_type" : "images",
-        "_id" : "AVt0NideJg-QeBjhxD7n",
-        "_score" : 1.0,
-        "_source" : {
-          "content_length" : 685,
-          "objectKey" : "AWSLogs/923732660828/CloudTrail/us-east-1/2017/04/16/923732660828_CloudTrail_us-east-1_20170416T0040Z_JWyCacnRi2ovRkmp.json.gz",
-          "metadata" : "{}",
-          "content_type" : "application/json",
-          "createdDate" : "2017-04-16T00:42:38+00:00"
-        }
-      },
-      {
-        "_index" : "metadata-store",
-        "_type" : "images",
-        "_id" : "AVt0LqGuJg-QeBjhxD7f",
-        "_score" : 1.0,
-        "_source" : {
-          "content_length" : 383,
-          "objectKey" : "undefined2017-04-16-00-31-41-953311A33B3F8FFD",
-          "metadata" : "{}",
-          "content_type" : "text/plain",
-          "createdDate" : "2017-04-16T00:31:42+00:00"
         }
       },
       {
@@ -207,6 +183,7 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
         "_source" : {
           "content_length" : 1140099,
           "objectKey" : "test/IMG_5151.JPG",
+          "queryableKey" : "test_IMG_5151.JPG",
           "metadata" : "{}",
           "content_type" : "image/jpeg",
           "createdDate" : "2017-04-16T00:34:55+00:00"
@@ -220,6 +197,7 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
         "_source" : {
           "content_length" : 129500,
           "objectKey" : "test/panda1.jpg",
+          "queryableKey" : "test_panda1.jpg",
           "metadata" : "{}",
           "content_type" : "image/jpeg",
           "createdDate" : "2017-04-16T00:41:17+00:00"
@@ -233,6 +211,7 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
         "_source" : {
           "content_length" : 0,
           "objectKey" : "test/",
+          "queryableKey" : "test_",
           "metadata" : "{}",
           "content_type" : "application/x-directory",
           "createdDate" : "2017-04-16T00:34:34+00:00"
