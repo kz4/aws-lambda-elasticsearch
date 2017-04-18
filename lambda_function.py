@@ -21,6 +21,9 @@ indexDoc = {
           "objectKey" : {
             "type" : "string"
           },
+          "queryableKey" : {
+            "type" : "string"
+          },
           "content_type" : {
             "type" : "string"
           },
@@ -67,6 +70,7 @@ def createIndex(esClient):
 def indexDocElement(esClient,key,response):
     try:
         indexObjectKey = key
+        queryableKey = key.replace("/", "_")
         indexcreatedDate = response['LastModified']
         indexcontent_length = response['ContentLength']
         indexcontent_type = response['ContentType']
@@ -74,6 +78,7 @@ def indexDocElement(esClient,key,response):
         retval = esClient.index(index='metadata-store', doc_type='images', body={
                 'createdDate': indexcreatedDate,
                 'objectKey': indexObjectKey,
+                'queryableKey': queryableKey,
                 'content_type': indexcontent_type,
                 'content_length': indexcontent_length,
                 'metadata': indexmetadata
