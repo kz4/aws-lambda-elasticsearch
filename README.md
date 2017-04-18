@@ -8,6 +8,10 @@ pip install urllib3 -t /path/to/project-dir
 ```
 3. Zip the helper packages with the lambda functions
 
+# Workflow
+1. A file is uploaded to S3, if custom metadata is also specified (key value pair with key starts with `x-amz-meta-` in the header), it will be attached to the metadata field of each document.
+2. Once a file is uploaded, S3 trigger the lambda function, which will index the new S3 object
+
 # Sample request and response
 ## GET Request for queryableKey
 ```
@@ -62,20 +66,20 @@ curl https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/m
   },
   "hits" : {
     "total" : 1,
-    "max_score" : 3.873871,
+    "max_score" : 1.0127578,
     "hits" : [
       {
         "_index" : "metadata-store",
         "_type" : "images",
-        "_id" : "AVt4nUMCJg-QeBjhxEDL",
-        "_score" : 3.873871,
+        "_id" : "AVt_WQzEJg-QeBjhxETz",
+        "_score" : 1.0127578,
         "_source" : {
           "content_length" : 94209,
           "objectKey" : "test/panda6.jpg",
           "queryableKey" : "test_panda6.jpg",
-          "metadata" : "{\"owner\": \"devil\", \"city\": \"Boston\", \"street\": \"1 main st\"}",
           "content_type" : "image/jpeg",
-          "createdDate" : "2017-04-16T21:13:44+00:00"
+          "createdDate" : "2017-04-18T04:36:34+00:00",
+          "metadata" : "{\"owner\": \"devil\", \"city\": \"Boston\"}"
         }
       }
     ]
@@ -156,6 +160,20 @@ curl https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/m
           "createdDate" : "2017-04-18T04:20:48+00:00",
           "metadata" : "{}"
         }
+      },
+      {
+        "_index" : "metadata-store",
+        "_type" : "images",
+        "_id" : "AVt_WQzEJg-QeBjhxETz",
+        "_score" : 1.0,
+        "_source" : {
+          "content_length" : 94209,
+          "objectKey" : "test/panda6.jpg",
+          "queryableKey" : "test_panda6.jpg",
+          "content_type" : "image/jpeg",
+          "createdDate" : "2017-04-18T04:36:34+00:00",
+          "metadata" : "{\"owner\": \"devil\", \"city\": \"Boston\"}"
+        }
       }
     ]
   }
@@ -183,24 +201,9 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
     "failed" : 0
   },
   "hits" : {
-    "total" : 1,
-    "max_score" : 8.578434,
-    "hits" : [
-      {
-        "_index" : "metadata-store",
-        "_type" : "images",
-        "_id" : "AVt4KZupJg-QeBjhxECU",
-        "_score" : 8.578434,
-        "_source" : {
-          "content_length" : 36074,
-          "queryableKey" : "test/panda2.jpg",
-          "objectKey" : "test_panda2.jpg",
-          "metadata" : "{}",
-          "content_type" : "image/jpeg",
-          "createdDate" : "2017-04-16T19:07:24+00:00"
-        }
-      }
-    ]
+    "total" : 0,
+    "max_score" : null,
+    "hits" : [ ]
   }
 }
 ```
@@ -216,8 +219,6 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
 ```
 ## Response
 ```
-{
-  "took" : 2,
   "timed_out" : false,
   "_shards" : {
     "total" : 1,
@@ -225,77 +226,77 @@ curl -XGET https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws
     "failed" : 0
   },
   "hits" : {
-    "total" : 694,
+    "total" : 5,
     "max_score" : 1.0,
     "hits" : [
       {
         "_index" : "metadata-store",
         "_type" : "images",
-        "_id" : "AVt0Nj1RJg-QeBjhxD7o",
+        "_id" : "AVt_TfOLJg-QeBjhxETr",
         "_score" : 1.0,
         "_source" : {
-          "content_length" : 1461,
-          "objectKey" : "AWSLogs/923732660828/CloudTrail/us-east-1/2017/04/16/923732660828_CloudTrail_us-east-1_20170416T0040Z_VFFbbgdIs2088i73.json.gz",
-          "queryableKey" : "AWSLogs_923732660828_CloudTrail_us-east-1_2017_04_16_923732660828_CloudTrail_us-east-1_20170416T0040Z_VFFbbgdIs2088i73.json.gz",
-          "metadata" : "{}",
-          "content_type" : "application/json",
-          "createdDate" : "2017-04-16T00:42:43+00:00"
-        }
-      },
-      {
-        "_index" : "metadata-store",
-        "_type" : "images",
-        "_id" : "AVt0MLp3Jg-QeBjhxD7i",
-        "_score" : 1.0,
-        "_source" : {
-          "content_length" : 538,
-          "objectKey" : "AWSLogs/923732660828/CloudTrail/us-west-2/2017/04/16/923732660828_CloudTrail_us-west-2_20170416T0030Z_6bBxVrtfsVGBVRJs.json.gz",
-          "queryableKey" : "AWSLogs_923732660828_CloudTrail_us-west-2_2017_04_16_923732660828_CloudTrail_us-west-2_20170416T0030Z_6bBxVrtfsVGBVRJs.json.gz",
-          "metadata" : "{}",
-          "content_type" : "application/json",
-          "createdDate" : "2017-04-16T00:36:41+00:00"
-        }
-      },
-      {
-        "_index" : "metadata-store",
-        "_type" : "images",
-        "_id" : "AVt0LxkIJg-QeBjhxD7h",
-        "_score" : 1.0,
-        "_source" : {
-          "content_length" : 1140099,
-          "objectKey" : "test/IMG_5151.JPG",
-          "queryableKey" : "test_IMG_5151.JPG",
-          "metadata" : "{}",
+          "content_length" : 62239,
+          "objectKey" : "test/panda9_with_cus_metadata.jpg",
+          "queryableKey" : "test_panda9_with_cus_metadata.jpg",
           "content_type" : "image/jpeg",
-          "createdDate" : "2017-04-16T00:34:55+00:00"
+          "createdDate" : "2017-04-18T04:24:26+00:00",
+          "metadata" : "{\"gender\": \"pandas just like humans have two genders, which includes male and female\", \"age\": \"pandas usually can live around 20 years\", \"location\": \"pandas live in the forest with many other animals\"}"
         }
       },
       {
         "_index" : "metadata-store",
         "_type" : "images",
-        "_id" : "AVt0NO4bJg-QeBjhxD7l",
+        "_id" : "AVt_SqOWJg-QeBjhxETn",
         "_score" : 1.0,
         "_source" : {
-          "content_length" : 129500,
-          "objectKey" : "test/panda1.jpg",
-          "queryableKey" : "test_panda1.jpg",
-          "metadata" : "{}",
+          "content_length" : 122558,
+          "objectKey" : "test/panda4.jpg",
+          "queryableKey" : "test_panda4.jpg",
           "content_type" : "image/jpeg",
-          "createdDate" : "2017-04-16T00:41:17+00:00"
+          "createdDate" : "2017-04-18T04:20:50+00:00",
+          "metadata" : "{}"
         }
       },
       {
         "_index" : "metadata-store",
         "_type" : "images",
-        "_id" : "AVt0LsTDJg-QeBjhxD7g",
+        "_id" : "AVt_Sp9AJg-QeBjhxETm",
         "_score" : 1.0,
         "_source" : {
-          "content_length" : 0,
-          "objectKey" : "test/",
-          "queryableKey" : "test_",
-          "metadata" : "{}",
-          "content_type" : "application/x-directory",
-          "createdDate" : "2017-04-16T00:34:34+00:00"
+          "content_length" : 94009,
+          "objectKey" : "test/panda3.jpg",
+          "queryableKey" : "test_panda3.jpg",
+          "content_type" : "image/jpeg",
+          "createdDate" : "2017-04-18T04:20:48+00:00",
+          "metadata" : "{}"
+        }
+      },
+      {
+        "_index" : "metadata-store",
+        "_type" : "images",
+        "_id" : "AVt_Sp2JJg-QeBjhxETl",
+        "_score" : 1.0,
+        "_source" : {
+          "content_length" : 36074,
+          "objectKey" : "test/panda2.jpg",
+          "queryableKey" : "test_panda2.jpg",
+          "content_type" : "image/jpeg",
+          "createdDate" : "2017-04-18T04:20:48+00:00",
+          "metadata" : "{}"
+        }
+      },
+      {
+        "_index" : "metadata-store",
+        "_type" : "images",
+        "_id" : "AVt_WQzEJg-QeBjhxETz",
+        "_score" : 1.0,
+        "_source" : {
+          "content_length" : 94209,
+          "objectKey" : "test/panda6.jpg",
+          "queryableKey" : "test_panda6.jpg",
+          "content_type" : "image/jpeg",
+          "createdDate" : "2017-04-18T04:36:34+00:00",
+          "metadata" : "{\"owner\": \"devil\", \"city\": \"Boston\"}"
         }
       }
     ]
