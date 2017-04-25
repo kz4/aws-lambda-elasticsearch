@@ -68,6 +68,13 @@ def createIndex(esClient):
             exit(4)
 
 def indexDocElement(esClient,key,response):
+    queryableKey = key.replace("/", "_")
+    try:
+        clearMetaData(esClient,queryableKey)
+    except Exception as e:
+        print(e)
+        print('Error removing object metadata from ElasticSearch Domain or file does not exist.')
+
     try:
         indexObjectKey = key
         queryableKey = key.replace("/", "_")
@@ -83,12 +90,39 @@ def indexDocElement(esClient,key,response):
                 'content_length': indexcontent_length,
                 'metadata': indexmetadata
         })
+        print("indexed: " + indexObjectKey)
     except Exception as E:
         print("Document not indexed")
         print("Error: ",E)
-        exit(5) 
+        exit(6)
       
+def clearMetaData(esClient,key):
+    try:
+        print("queryableKey: " + key)
+        # retval = esClient.search(index='metadata-store', doc_type='images', q='objectKey:' + key, fielddata_fields='_id')
+        retval = esClient.search(index='metadata-store', doc_type='images', q='queryableKey:' + key)
+        print("retval: {}".format(retval))
+        total = retval['hits']['total']
+        count = 0
+        if total > 0:
+            docId = retval['hits']['hits'][count]['_id']
+            print("Deleting: " + docId)
+            removeDocElement(esClient,docId)
+            return 1
+    except Exception as E:
+        print("Removing metadata failed")
+        print("Error: ",E)
+        # exit(5)
 
+def removeDocElement(esClient,docId):
+    try:
+        retval = esClient.delete(index='metadata-store', doc_type='images', id=docId)
+        print("Deleted: " + docId)
+        return 1
+    except Exception as E:
+        print("DocId delete command failed at ElasticSearch.")
+        print("Error: ",E)
+        exit(5)
 
 def lambda_handler(event, context):
     print("Received event: " + json.dumps(event, indent=2))
