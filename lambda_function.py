@@ -19,7 +19,8 @@ indexDoc = {
             "format" : "dateOptionalTime"
           },
           "objectKey" : {
-            "type" : "string"
+            "type" : "string",
+            "index" : "not_analyzed"
           },
           "queryableKey" : {
             "type" : "string"
@@ -70,7 +71,22 @@ def createIndex(esClient):
 def indexDocElement(esClient,key,response):
     queryableKey = key.replace("/", "_")
     try:
-        clearMetaData(esClient,queryableKey)
+        # clearMetaData(esClient,queryableKey)
+        body ='''
+        {  
+          "query" : {
+            "constant_score" : {
+                "filter" : {
+                    "term" : {
+                        "objectKey" :''' + key + '''
+                    }
+                }
+            }
+        }
+        }'''
+        print("boy: {}".format(body))
+        retval2 = esClient.search(index='metadata-store', doc_type='images', body=body)
+        print("retval2: {}".format(retval2))
     except Exception as e:
         print(e)
         print('Error removing object metadata from ElasticSearch Domain or file does not exist.')
