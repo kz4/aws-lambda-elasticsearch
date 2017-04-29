@@ -8,6 +8,9 @@ import urllib
 import json
 
 s3 = boto3.client('s3')
+index_name = 'metadata-store'
+index_type = 'all'
+endpoint = 'search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com'
 
 print('Loading function')
 
@@ -19,11 +22,11 @@ indexDoc = {
             "format" : "dateOptionalTime"
           },
           "objectKey" : {
-            "type" : "string",
-            "index" : "not_analyzed"
+            "type" : "string"
           },
           "queryableKey" : {
-            "type" : "string"
+            "type" : "string",
+            "index" : "not_analyzed"
           },
           "content_type" : {
             "type" : "string"
@@ -59,12 +62,12 @@ def connectES(esEndPoint):
 
 def createIndex(esClient):
     try:
-        res = esClient.indices.exists('metadata-store')
+        res = esClient.indices.exists(index_name)
         if res is False:
-            esClient.indices.create('metadata-store', body=indexDoc)
+            esClient.indices.create(index_name, body=indexDoc)
             return 1
     except Exception as E:
-            print("Unable to Create Index {0}".format("metadata-store"))
+            print("Unable to Create Index {0}".format(index_name))
             print(E)
             exit(4)
 
@@ -73,19 +76,19 @@ def indexDocElement(esClient,key,response):
     try:
         # clearMetaData(esClient,queryableKey)
         body ='''
-        {  
+        {
           "query" : {
             "constant_score" : {
                 "filter" : {
                     "term" : {
-                        "objectKey" :''' + key + '''
+                        "queryableKey" :"''' + queryableKey + '''"
                     }
                 }
             }
         }
         }'''
-        print("boy: {}".format(body))
-        retval2 = esClient.search(index='metadata-store', doc_type='images', body=body)
+        print("body: {}".format(body))
+        retval2 = esClient.search(index=index_name, doc_type=index_type, body=body)
         print("retval2: {}".format(retval2))
     except Exception as e:
         print(e)
@@ -98,7 +101,7 @@ def indexDocElement(esClient,key,response):
         indexcontent_length = response['ContentLength']
         indexcontent_type = response['ContentType']
         indexmetadata = json.dumps(response['Metadata'])
-        retval = esClient.index(index='metadata-store', doc_type='images', body={
+        retval = esClient.index(index=index_name, doc_type=index_type, body={
                 'createdDate': indexcreatedDate,
                 'objectKey': indexObjectKey,
                 'queryableKey': queryableKey,
@@ -115,8 +118,8 @@ def indexDocElement(esClient,key,response):
 def clearMetaData(esClient,key):
     try:
         print("queryableKey: " + key)
-        # retval = esClient.search(index='metadata-store', doc_type='images', q='objectKey:' + key, fielddata_fields='_id')
-        retval = esClient.search(index='metadata-store', doc_type='images', q='queryableKey:' + key)
+        # retval = esClient.search(index=index_name, doc_type=index_type, q='objectKey:' + key, fielddata_fields='_id')
+        retval = esClient.search(index=index_name, doc_type=index_type, q='queryableKey:' + key)
         print("retval: {}".format(retval))
         total = retval['hits']['total']
         count = 0
@@ -132,7 +135,7 @@ def clearMetaData(esClient,key):
 
 def removeDocElement(esClient,docId):
     try:
-        retval = esClient.delete(index='metadata-store', doc_type='images', id=docId)
+        retval = esClient.delete(index=index_name, doc_type=index_type, id=docId)
         print("Deleted: " + docId)
         return 1
     except Exception as E:
@@ -142,7 +145,7 @@ def removeDocElement(esClient,docId):
 
 def lambda_handler(event, context):
     print("Received event: " + json.dumps(event, indent=2))
-    esClient = connectES("search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com")
+    esClient = connectES(endpoint)
     createIndex(esClient)
 
     # Get the object from the event and show its content type

@@ -5,6 +5,9 @@ import json
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 import urllib
 
+index_name = 'metadata-store'
+index_type = 'all'
+endpoint = 'search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com'
 
 print('Loading function')
 
@@ -25,8 +28,8 @@ def connectES(esEndPoint):
 def clearMetaData(esClient,key):
     try:
         print("queryableKey: " + key)
-        # retval = esClient.search(index='metadata-store', doc_type='images', q='objectKey:' + key, fielddata_fields='_id')
-        retval = esClient.search(index='metadata-store', doc_type='images', q='queryableKey:' + key)
+        # retval = esClient.search(index=index_name, doc_type=index_type, q='objectKey:' + key, fielddata_fields='_id')
+        retval = esClient.search(index=index_name, doc_type=index_type, q='queryableKey:' + key)
         print("retval: {}".format(retval))
         total = retval['hits']['total']
         count = 0
@@ -37,7 +40,7 @@ def clearMetaData(esClient,key):
         #     count = count + 1
 
         # We want to delete the first one because we can get multiple results with similar structure,
-        # e.g. curl https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/metadata-store/images/_search\?pretty\&q\=queryableKey:"newFol_panda4.jpg"
+        # e.g. curl https://search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com/metadata-store/all/_search\?pretty\&q\=queryableKey:"newFol_panda4.jpg"
         # returns: newFol_panda4.jpg and newFol_panda6.jpg
         docId = retval['hits']['hits'][count]['_id']
         print("Deleting: " + docId)
@@ -52,7 +55,7 @@ def clearMetaData(esClient,key):
 
 def removeDocElement(esClient,docId):
     try:
-        retval = esClient.delete(index='metadata-store', doc_type='images', id=docId)
+        retval = esClient.delete(index=index_name, doc_type=index_type, id=docId)
         print("Deleted: " + docId)
         return 1
     except Exception as E:
@@ -63,7 +66,7 @@ def removeDocElement(esClient,docId):
 
 def lambda_handler(event, context):
     print("Received event: " + json.dumps(event, indent=2))
-    esClient = connectES("search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com")
+    esClient = connectES(endpoint)
 
     # Get the object from the event and show its content type
     bucket = event['Records'][0]['s3']['bucket']['name']
