@@ -4,9 +4,10 @@ import boto3
 import json
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 import urllib
+import re
 
 index_name = 'metadata-store'
-index_type = 'all'
+index_type = 'images'
 endpoint = 'search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com'
 
 print('Loading function')
@@ -71,7 +72,8 @@ def lambda_handler(event, context):
     # Get the object from the event and show its content type
     bucket = event['Records'][0]['s3']['bucket']['name']
     key = urllib.unquote_plus(event['Records'][0]['s3']['object']['key'].encode('utf8'))
-    queryableKey = key.replace("/", "_")
+    # queryableKey = key.replace("/", "_")
+    queryableKey = re.sub(r'\W+', '', key)
     try:
         clearMetaData(esClient,queryableKey)
         return 'Removed metadata for ' + key

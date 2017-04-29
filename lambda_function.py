@@ -6,10 +6,11 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 
 import urllib
 import json
+import re
 
 s3 = boto3.client('s3')
 index_name = 'metadata-store'
-index_type = 'all'
+index_type = 'images'
 endpoint = 'search-velo-mfierzhwcuuhkpfrhiryttg3jq.us-east-1.es.amazonaws.com'
 
 print('Loading function')
@@ -64,6 +65,7 @@ def createIndex(esClient):
     try:
         res = esClient.indices.exists(index_name)
         if res is False:
+            print("Creating index: " + index_name)
             esClient.indices.create(index_name, body=indexDoc)
             return 1
     except Exception as E:
@@ -72,9 +74,10 @@ def createIndex(esClient):
             exit(4)
 
 def indexDocElement(esClient,key,response):
-    queryableKey = key.replace("/", "_")
+    # queryableKey = key.replace("/", "_")
+    queryableKey = re.sub(r'\W+', '', key)
     try:
-        # clearMetaData(esClient,queryableKey)
+        clearMetaData(esClient,queryableKey)
         body ='''
         {
           "query" : {
@@ -96,7 +99,6 @@ def indexDocElement(esClient,key,response):
 
     try:
         indexObjectKey = key
-        queryableKey = key.replace("/", "_")
         indexcreatedDate = response['LastModified']
         indexcontent_length = response['ContentLength']
         indexcontent_type = response['ContentType']
